@@ -9,14 +9,16 @@ auth = Blueprint("auth", __name__)
 def login():
     if request.method == "POST":
         email = request.form.get("email")
-        password1 = request.form.get("password1")
+        password1 = request.form.get("password")
 
-        if len(email) < 4:
-            flash("Email must be greater than 3 character.", category ="error")
-        elif len(password1) < 7:
-            flash("Password must be at least 7 characters", category="error")
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                flash("Logged in successfully", category= "success")
+            else:
+                flash("Incorrect password, Try again.",category = "error")
         else:
-            flash("You join successful", category="success")
+            flash("Email does not exist.", category="error")
 
     return render_template("login.html", boolean=True)
     
@@ -32,7 +34,9 @@ def sign_up():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-    
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash("Email already exist.", category="error")
         if len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif len(first_name) < 2:
@@ -46,7 +50,8 @@ def sign_up():
             db.session.add(new_acc)
             db.session.commit()
             flash('Account created!', category="success")
-            return redirect(url_for('views.home'))
-            
+
+        return redirect(url_for('views.home'))
+        
                 
     return render_template("sign_up.html")
