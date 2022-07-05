@@ -1,13 +1,32 @@
+import imp
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from os  import path
+db = SQLAlchemy
+DB_NAME = "database.bd"
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'sadfjkasjkd aslkfjslpf'
     app.config['TEMPLATES_AUTO_RELOAD']=True
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_NAME}"
+    db.init_app(app)
+
     from .views import views
     from .auth import auth
     app.register_blueprint(views, url_prefix = "/")
     app.register_blueprint(auth, url_perfix = "/")
-    return app
+
+    from .models import User, Note
+
+    create_database(app)
+    return app 
+
+def create_database(app):
+    if not path("website/"+ DB_NAME):
+        db.create_all(app=app)
+        print("create database")
+
 config= { "DEBUG": True }
 app =Flask(__name__)
 app.config.from_mapping(config)
