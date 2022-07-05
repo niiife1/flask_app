@@ -1,6 +1,8 @@
 from unicodedata import category
-from flask import Blueprint, render_template, request, flash
-
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .models import User
+from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
 auth = Blueprint("auth", __name__)
 
 @auth.route('/login', methods=["GET", "POST"])
@@ -40,5 +42,11 @@ def sign_up():
         elif password1 != password2:
             flash("password don`t match.", category='error')
         else:
+            new_acc = User(email=email, first_name=first_name, password=generate_password_hash(password1, method="sha256"))
+            db.session.add(new_acc)
+            db.session.commit()
             flash('Account created!', category="success")
+            return redirect(url_for('views.home'))
+            
+                
     return render_template("sign_up.html")
