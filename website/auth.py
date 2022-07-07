@@ -1,7 +1,7 @@
 from unicodedata import category
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import User
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from . import db
 auth = Blueprint("auth", __name__)
 
@@ -9,7 +9,7 @@ auth = Blueprint("auth", __name__)
 def login():
     if request.method == "POST":
         email = request.form.get("email")
-        password1 = request.form.get("password")
+        password = request.form.get("password")
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -34,9 +34,9 @@ def sign_up():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash("Email already exist.", category="error")
+        #user = User.query.filter_by(email=email).first()
+        #if user:
+            #flash("Email already exist.", category="error")
         if len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
         elif len(first_name) < 2:
