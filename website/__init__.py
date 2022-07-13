@@ -20,12 +20,14 @@ def create_app():
     from .models import User, Note
 
     create_database(app)
-    return app 
 
+    return app
 def create_database(app):
-    if not path.exists("website/"+ DB_NAME):
+    if not path.exists('website/' + DB_NAME):
         db.create_all(app=app)
-        print("create database")
+        db.session.commit(app)
+
+        print('Created Database!')
 
 config= { "DEBUG": True }
 app =Flask(__name__)
